@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корочки.есть</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <nav id="mainNav" class="navbar navbar-expand-lg navbar-dark bg-primary d-none">
+        <div class="container">
+            <a class="navbar-brand" href="#">Корочки.есть</a>
+            <div class="d-flex">
+                <span id="userDisplay" class="navbar-text me-3"></span>
+                <button id="logoutBtn" class="btn btn-outline-light btn-sm">Выйти</button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="page-login" class="container mt-5" style="max-width: 400px;">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="text-center mb-3">Вход</h4>
+                <div id="loginError" class="alert alert-danger d-none"></div>
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label class="form-label">Логин</label>
+                        <input type="text" class="form-control" id="loginUsername" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Войти</button>
+                </form>
+                <p class="text-center mt-2 mb-0">
+                    <a href="#" id="goToRegister">Еще не зарегистрированы? Регистрация</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-register" class="container mt-5 d-none" style="max-width: 450px;">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="text-center mb-3">Регистрация</h4>
+                <form id="registerForm" novalidate>
+                    <div class="mb-2">
+                        <label class="form-label">Логин *</label>
+                        <input type="text" class="form-control" id="regLogin" required minlength="6" pattern="[A-Za-z0-9]+">
+                        <small class="text-muted">Латиница и цифры, от 6 символов</small>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Пароль *</label>
+                        <input type="password" class="form-control" id="regPass" required minlength="8">
+                        <small class="text-muted">Минимум 8 символов</small>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">ФИО *</label>
+                        <input type="text" class="form-control" id="regFio" required pattern="[А-Яа-яЁё\s]+">
+                        <small class="text-muted">Кириллица и пробелы</small>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Телефон *</label>
+                        <input type="tel" class="form-control" id="regPhone" required pattern="8\(\d{3}\)\d{3}-\d{2}-\d{2}" placeholder="8(XXX)XXX-XX-XX">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="regEmail" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 mt-2">Зарегистрироваться</button>
+                </form>
+                <p class="text-center mt-2 mb-0">
+                    <a href="#" id="goToLoginFromReg">Уже зарегистрированы? Войти</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-requests" class="container mt-4 d-none">
+        <h4>Мои заявки</h4>
+        <div id="noRequests" class="alert alert-info d-none">У вас пока нет заявок.</div>
+        <table class="table table-bordered" id="requestsTable">
+            <thead class="table-light">
+                <tr>
+                    <th>Курс</th>
+                    <th>Дата</th>
+                    <th>Оплата</th>
+                    <th>Статус</th>
+                    <th>Отзыв</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button id="goToNewRequest" class="btn btn-success">Создать заявку</button>
+    </div>
+
+    <div id="page-new-request" class="container mt-4 d-none" style="max-width: 500px;">
+        <h4>Новая заявка</h4>
+        <form id="newRequestForm">
+            <div class="mb-3">
+                <label class="form-label">Название курса</label>
+                <input type="text" class="form-control" id="courseName" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Дата начала</label>
+                <input type="date" class="form-control" id="startDate" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Способ оплаты</label>
+                <select class="form-select" id="paymentMethod" required>
+                    <option value="" disabled selected>Выберите...</option>
+                    <option value="Наличные">Наличные</option>
+                    <option value="Перевод по номеру телефона">Перевод по номеру телефона</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+            <button type="button" id="cancelRequest" class="btn btn-secondary ms-2">Назад</button>
+        </form>
+    </div>
+
+    <div id="page-admin" class="container mt-4 d-none">
+        <h4>Панель администратора</h4>
+        <p>Все заявки:</p>
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Пользователь</th>
+                    <th>Курс</th>
+                    <th>Дата</th>
+                    <th>Оплата</th>
+                    <th>Статус</th>
+                    <th>Действие</th>
+                </tr>
+            </thead>
+            <tbody id="adminTableBody"></tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="feedbackModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Оставить отзыв</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea class="form-control" id="feedbackText" rows="3" placeholder="Ваш отзыв..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" id="saveFeedbackBtn">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const STORAGE_KEY = 'korochki_db';
+        let DB = {
+            users: [
+                { login: 'user123', password: '123456', fio: 'Иванов Иван Иванович', phone: '8(900)123-45-67', email: 'ivan@test.ru' },
+                { login: 'Admin', password: 'KorokNET', fio: 'Администратор', phone: '', email: '' }
+            ],
+            requests: [
+                { id: 1, userLogin: 'user123', course: 'Основы Python', date: '2026-09-15', payment: 'Наличные', status: 'Новая', feedback: '' },
+                { id: 2, userLogin: 'user123', course: 'Веб-разработка', date: '2026-10-01', payment: 'Перевод по номеру телефона', status: 'Идет обучение', feedback: '' },
+                { id: 3, userLogin: 'user123', course: 'Data Science', date: '2026-08-20', payment: 'Наличные', status: 'Обучение завершено', feedback: 'Хороший курс' }
+            ],
+            currentUser: null
+        };
+
+        function loadDB() {
+            let data = localStorage.getItem(STORAGE_KEY);
+            if (data) DB = JSON.parse(data);
+        }
+        function saveDB() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
+        }
+        loadDB();
+
+        const nav = document.getElementById('mainNav');
+        const userDisp = document.getElementById('userDisplay');
+        const pages = {
+            login: document.getElementById('page-login'),
+            register: document.getElementById('page-register'),
+            requests: document.getElementById('page-requests'),
+            newReq: document.getElementById('page-new-request'),
+            admin: document.getElementById('page-admin')
+        };
+
+        function showPage(name) {
+            Object.values(pages).forEach(p => p.classList.add('d-none'));
+            if (name === 'admin') {
+                nav.classList.remove('d-none');
+                userDisp.textContent = 'Admin';
+                pages.admin.classList.remove('d-none');
+                renderAdmin();
+            } else if (DB.currentUser) {
+                nav.classList.remove('d-none');
+                userDisp.textContent = DB.currentUser.fio;
+                pages[name].classList.remove('d-none');
+                if (name === 'requests') renderRequests();
+            } else {
+                nav.classList.add('d-none');
+                pages[name].classList.remove('d-none');
+            }
+        }
+
+        document.getElementById('logoutBtn').onclick = function() {
+            DB.currentUser = null;
+            saveDB();
+            showPage('login');
+        };
+
+        document.getElementById('loginForm').onsubmit = function(e) {
+            e.preventDefault();
+            let login = document.getElementById('loginUsername').value.trim();
+            let pass = document.getElementById('loginPassword').value.trim();
+            let err = document.getElementById('loginError');
+            let user = DB.users.find(u => u.login === login && u.password === pass);
+            if (!user) {
+                err.textContent = 'Неверный логин или пароль!';
+                err.classList.remove('d-none');
+                return;
+            }
+            err.classList.add('d-none');
+            DB.currentUser = user;
+            saveDB();
+            if (login === 'Admin') showPage('admin');
+            else showPage('requests');
+            document.getElementById('loginForm').reset();
+        };
+
+        document.getElementById('registerForm').onsubmit = function(e) {
+            e.preventDefault();
+            let form = e.target;
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
+            }
+            let login = document.getElementById('regLogin').value.trim();
+            if (DB.users.some(u => u.login === login)) {
+                alert('Такой логин уже есть!');
+                return;
+            }
+            DB.users.push({
+                login: login,
+                password: document.getElementById('regPass').value,
+                fio: document.getElementById('regFio').value.trim(),
+                phone: document.getElementById('regPhone').value.trim(),
+                email: document.getElementById('regEmail').value.trim()
+            });
+            saveDB();
+            alert('Регистрация успешна!');
+            form.reset();
+            form.classList.remove('was-validated');
+            showPage('login');
+        };
+
+        function renderRequests() {
+            let tbody = document.querySelector('#requestsTable tbody');
+            let noReq = document.getElementById('noRequests');
+            let reqs = DB.requests.filter(r => r.userLogin === DB.currentUser.login);
+            if (reqs.length === 0) {
+                noReq.classList.remove('d-none');
+                tbody.innerHTML = '';
+                return;
+            }
+            noReq.classList.add('d-none');
+            tbody.innerHTML = reqs.map(r => {
+                let badge = 'bg-info';
+                if (r.status === 'Идет обучение') badge = 'bg-warning text-dark';
+                if (r.status === 'Обучение завершено') badge = 'bg-success';
+                let fb = r.feedback ? r.feedback : '<button class="btn btn-sm btn-outline-secondary fb-btn" data-id="' + r.id + '">Оставить отзыв</button>';
+                return '<tr><td>' + r.course + '</td><td>' + r.date + '</td><td>' + r.payment + '</td><td><span class="badge ' + badge + '">' + r.status + '</span></td><td>' + fb + '</td></tr>';
+            }).join('');
+            document.querySelectorAll('.fb-btn').forEach(btn => {
+                btn.onclick = function() {
+                    let id = parseInt(this.dataset.id);
+                    document.getElementById('feedbackText').value = '';
+                    document.getElementById('saveFeedbackBtn').onclick = function() {
+                        let text = document.getElementById('feedbackText').value.trim();
+                        if (!text) { alert('Напишите отзыв!'); return; }
+                        let req = DB.requests.find(r => r.id === id);
+                        if (req) req.feedback = text;
+                        saveDB();
+                        bootstrap.Modal.getInstance(document.getElementById('feedbackModal')).hide();
+                        renderRequests();
+                    };
+                    new bootstrap.Modal(document.getElementById('feedbackModal')).show();
+                };
+            });
+        }
+
+        document.getElementById('newRequestForm').onsubmit = function(e) {
+            e.preventDefault();
+            DB.requests.push({
+                id: Date.now(),
+                userLogin: DB.currentUser.login,
+                course: document.getElementById('courseName').value.trim(),
+                date: document.getElementById('startDate').value,
+                payment: document.getElementById('paymentMethod').value,
+                status: 'Новая',
+                feedback: ''
+            });
+            saveDB();
+            document.getElementById('newRequestForm').reset();
+            showPage('requests');
+        };
+
+        function renderAdmin() {
+            let tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = DB.requests.map(r => {
+                let u = DB.users.find(u => u.login === r.userLogin);
+                let name = u ? u.fio : r.userLogin;
+                let badge = 'bg-info';
+                if (r.status === 'Идет обучение') badge = 'bg-warning text-dark';
+                if (r.status === 'Обучение завершено') badge = 'bg-success';
+                let sel = '<select class="form-select form-select-sm st-sel" data-id="' + r.id + '">' +
+                    '<option value="Новая" ' + (r.status === 'Новая' ? 'selected' : '') + '>Новая</option>' +
+                    '<option value="Идет обучение" ' + (r.status === 'Идет обучение' ? 'selected' : '') + '>Идет обучение</option>' +
+                    '<option value="Обучение завершено" ' + (r.status === 'Обучение завершено' ? 'selected' : '') + '>Обучение завершено</option>' +
+                    '</select>';
+                return '<tr><td>' + name + '</td><td>' + r.course + '</td><td>' + r.date + '</td><td>' + r.payment + '</td><td><span class="badge ' + badge + '">' + r.status + '</span></td><td>' + sel + '</td></tr>';
+            }).join('');
+            document.querySelectorAll('.st-sel').forEach(sel => {
+                sel.onchange = function() {
+                    let id = parseInt(this.dataset.id);
+                    let req = DB.requests.find(r => r.id === id);
+                    if (req) req.status = this.value;
+                    saveDB();
+                    renderAdmin();
+                };
+            });
+        }
+
+        document.getElementById('goToRegister').onclick = function(e) { e.preventDefault(); showPage('register'); };
+        document.getElementById('goToLoginFromReg').onclick = function(e) { e.preventDefault(); showPage('login'); };
+        document.getElementById('goToNewRequest').onclick = function(e) { e.preventDefault(); showPage('newReq'); };
+        document.getElementById('cancelRequest').onclick = function(e) { e.preventDefault(); showPage('requests'); };
+
+        if (DB.currentUser) {
+            if (DB.currentUser.login === 'Admin') showPage('admin');
+            else showPage('requests');
+        } else {
+            showPage('login');
+        }
+    </script>
+
+</body>
+</html>
