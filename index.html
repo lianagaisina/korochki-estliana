@@ -8,6 +8,7 @@
 </head>
 <body>
 
+    <!-- Шапка -->
     <nav id="mainNav" class="navbar navbar-expand-lg navbar-dark bg-primary d-none">
         <div class="container">
             <a class="navbar-brand" href="#">Корочки.есть</a>
@@ -18,6 +19,7 @@
         </div>
     </nav>
 
+    <!-- Авторизация -->
     <div id="page-login" class="container mt-5" style="max-width: 400px;">
         <div class="card">
             <div class="card-body">
@@ -41,6 +43,7 @@
         </div>
     </div>
 
+    <!-- Регистрация -->
     <div id="page-register" class="container mt-5 d-none" style="max-width: 450px;">
         <div class="card">
             <div class="card-body">
@@ -78,6 +81,7 @@
         </div>
     </div>
 
+    <!-- Список заявок -->
     <div id="page-requests" class="container mt-4 d-none">
         <h4>Мои заявки</h4>
         <div id="noRequests" class="alert alert-info d-none">У вас пока нет заявок.</div>
@@ -96,6 +100,7 @@
         <button id="goToNewRequest" class="btn btn-success">Создать заявку</button>
     </div>
 
+    <!-- Новая заявка -->
     <div id="page-new-request" class="container mt-4 d-none" style="max-width: 500px;">
         <h4>Новая заявка</h4>
         <form id="newRequestForm">
@@ -120,6 +125,7 @@
         </form>
     </div>
 
+    <!-- Панель администратора -->
     <div id="page-admin" class="container mt-4 d-none">
         <h4>Панель администратора</h4>
         <p>Все заявки:</p>
@@ -138,6 +144,7 @@
         </table>
     </div>
 
+    <!-- Модалка отзыва -->
     <div class="modal fade" id="feedbackModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -159,6 +166,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        // База
         const STORAGE_KEY = 'korochki_db';
         let DB = {
             users: [
@@ -182,6 +190,7 @@
         }
         loadDB();
 
+        // Навигация
         const nav = document.getElementById('mainNav');
         const userDisp = document.getElementById('userDisplay');
         const pages = {
@@ -210,12 +219,14 @@
             }
         }
 
+        // Выход
         document.getElementById('logoutBtn').onclick = function() {
             DB.currentUser = null;
             saveDB();
             showPage('login');
         };
 
+        // Вход
         document.getElementById('loginForm').onsubmit = function(e) {
             e.preventDefault();
             let login = document.getElementById('loginUsername').value.trim();
@@ -235,6 +246,7 @@
             document.getElementById('loginForm').reset();
         };
 
+        // Регистрация
         document.getElementById('registerForm').onsubmit = function(e) {
             e.preventDefault();
             let form = e.target;
@@ -261,6 +273,7 @@
             showPage('login');
         };
 
+        // Заявки
         function renderRequests() {
             let tbody = document.querySelector('#requestsTable tbody');
             let noReq = document.getElementById('noRequests');
@@ -296,6 +309,7 @@
             });
         }
 
+        // Новая заявка
         document.getElementById('newRequestForm').onsubmit = function(e) {
             e.preventDefault();
             DB.requests.push({
@@ -312,6 +326,7 @@
             showPage('requests');
         };
 
+        // Админка
         function renderAdmin() {
             let tbody = document.getElementById('adminTableBody');
             tbody.innerHTML = DB.requests.map(r => {
@@ -338,11 +353,13 @@
             });
         }
 
+        // Переходы
         document.getElementById('goToRegister').onclick = function(e) { e.preventDefault(); showPage('register'); };
         document.getElementById('goToLoginFromReg').onclick = function(e) { e.preventDefault(); showPage('login'); };
         document.getElementById('goToNewRequest').onclick = function(e) { e.preventDefault(); showPage('newReq'); };
         document.getElementById('cancelRequest').onclick = function(e) { e.preventDefault(); showPage('requests'); };
 
+        // Старт
         if (DB.currentUser) {
             if (DB.currentUser.login === 'Admin') showPage('admin');
             else showPage('requests');
